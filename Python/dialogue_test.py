@@ -106,7 +106,7 @@ if __name__ == '__main__':
     PATH = '/var/tmp/tmp.wav'
     PATH_DOWN = '/var/tmp/tmp_down.wav'
     with open("APIKEY.txt","r") as f:
-    APIKEY = f.read()
+        APIKEY =f.read()
     CARD = 1 #OUTPUTの指定
     DEVICE = 0 #OUTPUTの指定
     #サンプリングレート、マイク性能に依存(このマイクは48kHz対応)
