@@ -1,0 +1,6 @@
+sw1:電灯ON
+sw6:電灯OFF
+sw2:エアコンON
+sw7:エアコンOFF
+sw5:テレビON
+sw10:テレビOFF

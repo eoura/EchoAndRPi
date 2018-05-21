@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+import sys
+import os
+import errno
+from datetime import datetime, date, timedelta
+import yaml
+try:
+    from urllib2 import urlopen # Python 2.x
+except ImportError:
+    from urllib.request import urlopen # Python 3.x
+try:
+    import cPickle as pickle    # Python 2.x
+except ImportError:
+    import pickle               # Python 3.x
+
+datadir = "~/.jpholidayp"
+cachefile = "cache"
+cachedays = 5
+
+class Cache:
+    def __init__(self):
+        try:
+            os.mkdir(os.path.expanduser(datadir))
+        except OSError:
+            # get exception instance on Python <= 2.5, 2.6/2.7 and 3.x
+            if sys.exc_info()[1].errno != errno.EEXIST:
+                raise
+
+    def get(self):
+        file = os.path.join(os.path.expanduser(datadir), cachefile)
+        if not os.path.exists(file):
+            return None
+        today = date.today()
+        try:
+            with open(file, 'rb') as f:
+                dat = pickle.load(f)
+        except:                 # cache file may be broken
+            return None
+        if dat["expires"] <= today:
+            return None
+        else:
+            return dat["val"]
+
+    def set(self, val):
+        expires = date.today() + timedelta(cachedays)
+        dat = {"expires": expires, "val": val}
+        file = os.path.join(os.path.expanduser(datadir), cachefile)
+        with open(file, 'wb') as f:
+            pickle.dump(dat, f, protocol=2) # for Python 2.x and 3.x
+
+class HolidayJp:
+    URL = 'https://raw.githubusercontent.com/holiday-jp/holiday_jp/master/holidays.yml'
+
+    def __init__(self):
+        cache = Cache()
+        c = cache.get()
+        if c:
+            dat = c["holiday_jp"]
+        else:
+            res = urlopen(self.URL)
+            dat = yaml.load(res)
+            cache.set({"holiday_jp": dat})
+        self.holiday_jp = dat
+
+    def is_holiday(self, dt):
+        return dt in self.holiday_jp.keys()
+
+class JpHoliday:
+    @classmethod
+    def is_national_holiday(self, dt):
+        holiday_jp = HolidayJp()
+        return holiday_jp.is_holiday(dt)
+
+    # value of datetime.weekday()
+    SATURDAY = 5
+    SUNDAY = 6
+
+    @classmethod
+    def is_holiday(self, dt):
+        w = dt.weekday()
+        if w == self.SATURDAY or w == self.SUNDAY:
+            return True
+        elif self.is_national_holiday(dt):
+            return True
+        else:
+            return False
+
+# exit statuses
+EXIT_HOLIDAY = 0
+EXIT_WEEKDAY = 1
+EXIT_ERROR = 2
+
+def jpholidayp():
+    today = date.today()
+    if JpHoliday.is_holiday(today):
+        sys.exit(EXIT_HOLIDAY)
+    else:
+        sys.exit(EXIT_WEEKDAY)
+
+if __name__ == "__main__":
+    jpholidayp()
