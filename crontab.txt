@@ -1,0 +1,17 @@
+
+# daemon's notion of time and timezones.
+#
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+#
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+#
+# For more information see the manual pages of crontab(5) and cron(8)
+#
+# m h  dom mon dow   command
+50 7 * * 1-5 python3 /home/pi/Project/Python/lib/jpholidayp || python3 /home/pi/I2C0x52-IR/IR-remocon03-dirbase.py t /home/pi/I2C0x52-IR/ch0.data
+53 7 * * 1-5 python3 /home/pi/Project/Python/lib/jpholidayp || /bin/bash /home/pi/Project/Python/jsay2.sh
+15,25 8 * * 1-5 python3 /home/pi/Project/Python/lib/jpholidayp || /bin/bash /home/pi/Project/Python/jsay2.sh
+
