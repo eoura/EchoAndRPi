@@ -105,7 +105,8 @@ if __name__ == '__main__':
     CHANNELS = 1
     PATH = '/var/tmp/tmp.wav'
     PATH_DOWN = '/var/tmp/tmp_down.wav'
-    APIKEY='7565706e47684c415047706b4743527041574168677938576876634c39346f395762756f6432574d467936' #DocomoAPI Key
+    with open("APIKEY.txt","r") as f:
+    APIKEY = f.read()
     CARD = 1 #OUTPUTの指定
     DEVICE = 0 #OUTPUTの指定
     #サンプリングレート、マイク性能に依存(このマイクは48kHz対応)
